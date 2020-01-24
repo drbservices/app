@@ -44,7 +44,7 @@
 						v-for="item in itemsSorted"
 						:key="item[junctionRelatedKey][relatedPrimaryKeyField]"
 						class="row"
-						@click="startEdit(item[junctionPrimaryKey])"
+						@click="startEditDirect(item[junctionRelatedKey][relatedPrimaryKeyField])"
 					>
 						<div
 							v-if="sortable"
@@ -144,6 +144,7 @@
 import mixin from '@directus/extension-toolkit/mixins/interface';
 import { diff } from 'deep-object-diff';
 import shortid from 'shortid';
+import { mapState } from 'vuex';
 
 export default {
 	name: 'InterfaceManyToMany',
@@ -171,6 +172,7 @@ export default {
 	},
 
 	computed: {
+		...mapState(['currentProjectKey']),
 		// If the relationship has been configured or not
 		relationshipSetup() {
 			if (!this.relation) return false;
@@ -366,6 +368,11 @@ export default {
 			}
 
 			this.editItem = values;
+		},
+		startEditDirect(junctionPrimaryKey) {
+			return this.$router.push(
+				`/${this.currentProjectKey}/collections/${this.relation.junction.collection_one.collection}/${junctionPrimaryKey}`
+			);
 		},
 
 		saveEditItem() {
